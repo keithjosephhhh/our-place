@@ -15,6 +15,13 @@ export function TopBar() {
   const path = usePathname();
   const app = appFor(path);
   const th = useTheme();
+  const [cursors, setCursors] = useState(true);
+  useEffect(() => { try { setCursors(localStorage.getItem("showCursors") !== "0"); } catch { /* ignore */ } }, []);
+  const toggleCursors = () => {
+    const n = !cursors; setCursors(n);
+    try { localStorage.setItem("showCursors", n ? "1" : "0"); } catch { /* ignore */ }
+    window.dispatchEvent(new CustomEvent("cursors-toggle", { detail: n }));
+  };
   const [now, setNow] = useState(() => new Date());
   useEffect(() => { const i = setInterval(() => setNow(new Date()), 15_000); return () => clearInterval(i); }, []);
   const t = (tz?: string) => now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", timeZone: tz });
@@ -42,6 +49,7 @@ export function TopBar() {
           <b className="font-medium">{name}</b><span className="hidden sm:inline">{peer ? "is here" : "is away"}</span>
           {partner && <span className="opacity-80">· {t(partner.timezone)}</span>}
         </span>
+        <button onClick={toggleCursors} aria-pressed={cursors} title={cursors ? "Hide each other's cursors" : "Show each other's cursors"} aria-label="Show each other's cursors" className={`hidden rounded-full px-2.5 py-0.5 text-sm md:block ${cursors ? "bg-rose text-white" : "bg-white/70"}`}>👆</button>
         <button onClick={() => th.setXmas(!th.xmas)} aria-pressed={th.xmas} title="Christmas mode" aria-label="Christmas mode" className={`rounded-full px-2.5 py-0.5 text-sm ${th.xmas ? "bg-rose text-white" : "bg-white/70"}`}>🎄</button>
         <button onClick={() => th.setDark(!th.dark)} aria-pressed={th.dark} title={th.dark ? "Light mode" : "Dark mode"} aria-label={th.dark ? "Light mode" : "Dark mode"} className="rounded-full bg-white/70 px-2.5 py-0.5 text-sm">{th.dark ? "☀️" : "🌙"}</button>
         <button onClick={() => sendFx("wave")} disabled={!peer} title={peer ? `Wave at ${name}` : `${name} isn't online`} className="rounded-full bg-blush px-3 py-0.5 text-sm disabled:opacity-50">👋</button>

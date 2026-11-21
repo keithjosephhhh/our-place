@@ -2,6 +2,7 @@ import { SpaceProvider } from "@/components/SpaceProvider";
 import { CallDock } from "@/components/CallDock";
 import { TopBar } from "@/components/TopBar";
 import { FxLayer } from "@/components/FxLayer";
+import { PartnerCursor } from "@/components/PartnerCursor";
 import { Ambient } from "@/components/Ambient";
 
 // The provider lives here so the call and music persist while moving between apps.
@@ -16,6 +17,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       )}
       <CallDock>{children}</CallDock>
       <FxLayer />
+      <PartnerCursor />
     </SpaceProvider>
   );
 }
