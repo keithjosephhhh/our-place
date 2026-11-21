@@ -7,7 +7,7 @@ export const APPS: AppDef[] = [
   { href: "/arcade", label: "Arcade", emoji: "🎮", blurb: "Games for two", bg: "bg-sage", ready: true },
   { href: "/chat", label: "Chat", emoji: "💬", blurb: "Texts, photos, voice notes", bg: "bg-powder", ready: true },
   { href: "/music", label: "Music", emoji: "🎵", blurb: "Listen at the same moment", bg: "bg-blush", ready: true },
-  { href: "/photo-booth", label: "Photo Booth", emoji: "📸", blurb: "Silly pictures, our scrapbook", bg: "bg-sage", ready: false },
+  { href: "/photo-booth", label: "Photo Booth", emoji: "📸", blurb: "Silly pictures, our scrapbook", bg: "bg-sage", ready: true },
   { href: "/bible", label: "Bible", emoji: "📖", blurb: "Read and pray side by side", bg: "bg-powder", ready: false },
   { href: "/notes", label: "Love Notes", emoji: "💌", blurb: "Little letters, open when…", bg: "bg-blush", ready: false },
   { href: "/memories", label: "Memories", emoji: "🗓️", blurb: "A timeline of us", bg: "bg-butter", ready: false },
