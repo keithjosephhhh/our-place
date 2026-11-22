@@ -4,15 +4,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 type Send = (event: string, payload: unknown) => void;
 type On = (event: string, h: (p: any) => void) => () => void;
 
+// STUN finds a direct path; TURN relays the video when the two of you are on strict networks (mobile data, offices, some home routers).
+// Set NEXT_PUBLIC_TURN_* to use your own TURN account. Without it, a shared free relay is used as a fallback.
+const ownTurn = process.env.NEXT_PUBLIC_TURN_URL;
 const iceServers: RTCIceServer[] = [
-  { urls: "stun:stun.l.google.com:19302" },
-  ...(process.env.NEXT_PUBLIC_TURN_URL
-    ? [{
-        urls: process.env.NEXT_PUBLIC_TURN_URL,
-        username: process.env.NEXT_PUBLIC_TURN_USERNAME,
-        credential: process.env.NEXT_PUBLIC_TURN_CREDENTIAL,
-      }]
-    : []),
+  { urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"] },
+  ownTurn
+    ? { urls: ownTurn.split(","), username: process.env.NEXT_PUBLIC_TURN_USERNAME, credential: process.env.NEXT_PUBLIC_TURN_CREDENTIAL }
+    : { urls: ["turn:openrelay.metered.ca:80", "turn:openrelay.metered.ca:443", "turn:openrelay.metered.ca:443?transport=tcp"], username: "openrelayproject", credential: "openrelayproject" },
 ];
 
 export type CallState = "idle" | "requesting-media" | "waiting" | "connecting" | "connected" | "failed";
@@ -27,6 +26,7 @@ export type CallState = "idle" | "requesting-media" | "waiting" | "connecting" |
 export function useCall(myId: string | null, peerId: string | null, send: Send, on: On) {
   const pc = useRef<RTCPeerConnection | null>(null);
   const makingOffer = useRef(false);
+  const pendingIce = useRef<RTCIceCandidateInit[]>([]);
   const [localStream, setLocal] = useState<MediaStream | null>(null);
   const [remoteStream, setRemote] = useState<MediaStream | null>(null);
   const [localScreen, setLocalScreen] = useState<MediaStream | null>(null);
@@ -62,7 +62,7 @@ export function useCall(myId: string | null, peerId: string | null, send: Send, 
   const teardown = useCallback(() => {
     localScreenRef.current?.getTracks().forEach(t => t.stop());
     localScreenRef.current = null; screenSenders.current = [];
-    pc.current?.close(); pc.current = null;
+    pc.current?.close(); pc.current = null; pendingIce.current = [];
     localRef.current?.getTracks().forEach(t => t.stop()); localRef.current = null;
     remoteStreams.current.clear(); remoteScreenId.current = null;
     setLocal(null); setRemote(null); setLocalScreen(null); setRemoteScreen(null); setState("idle");
@@ -87,8 +87,9 @@ export function useCall(myId: string | null, peerId: string | null, send: Send, 
       const s = conn.connectionState;
       if (s === "connected") setState("connected");
       else if (s === "connecting") setState("connecting");
-      else if (s === "failed") { setState("failed"); setError("Connection lost. Try again."); }
+      else if (s === "failed") { conn.restartIce(); setState("failed"); setError("Couldn't connect directly. Retrying through a relay… if this stays, hang up and join again."); }
     };
+    conn.oniceconnectionstatechange = () => { if (conn.iceConnectionState === "failed") conn.restartIce(); };
     pc.current = conn;
     return conn;
   }, [peerId, send, syncRemote]);
@@ -146,14 +147,18 @@ export function useCall(myId: string | null, peerId: string | null, send: Send, 
         const collision = d.type === "offer" && (makingOffer.current || conn.signalingState !== "stable");
         if (collision && !polite) return; // impolite peer ignores colliding offer
         await conn.setRemoteDescription(d);
+        for (const c of pendingIce.current.splice(0)) { try { await conn.addIceCandidate(c); } catch { /* stale */ } }
         if (d.type === "offer") {
           await conn.setLocalDescription();
           send("rtc-desc", { to: peerId, d: conn.localDescription });
         }
       }),
       on("rtc-ice", async ({ to, c }) => {
-        if (to !== myId || !pc.current) return;
-        try { await pc.current.addIceCandidate(c); } catch { /* ignore stale candidates */ }
+        if (to !== myId) return;
+        const conn = pc.current;
+        // Candidates can arrive before the description they belong to: keep them until it is set.
+        if (!conn || !conn.remoteDescription) { pendingIce.current.push(c); return; }
+        try { await conn.addIceCandidate(c); } catch { /* ignore stale candidates */ }
       }),
       on("rtc-leave", () => {
         remoteStreams.current.clear(); remoteScreenId.current = null;
