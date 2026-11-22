@@ -33,8 +33,8 @@ export const FILTER_CSS: Record<FilterKind, string> = {
   mono: "grayscale(1) contrast(1.05)",
   dreamy: "brightness(1.1) saturate(1.3) hue-rotate(-12deg)",
 };
-export const FRAME_COLORS = ["#FFFFFF", "#FFD9C7", "#E0644A", "#F4B67A", "#CFE0B0", "#F2D9A6"];
-export const PEN_COLORS = ["#FFFFFF", "#F2826B", "#F2A65A", "#F5D847", "#6CC49A", "#5BA8E0", "#A98BE0", "#4A2F25"];
+export const FRAME_COLORS = ["#FFFFFF", "#FFD6E7", "#D6307E", "#DCCBFF", "#CDEFD3", "#F2D9A6"];
+export const PEN_COLORS = ["#FFFFFF", "#E2428F", "#F2A65A", "#F5D847", "#6CC49A", "#5BA8E0", "#A98BE0", "#141218"];
 export const STAMPS = ["❤️", "⭐", "🌸", "🐚", "☁️", "😘", "🌈", "🎉"];
 
 export function loadStyle(): StageStyle {

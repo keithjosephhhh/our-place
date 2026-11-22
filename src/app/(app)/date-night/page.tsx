@@ -1,4 +1,5 @@
 "use client";
+import { LobbyTiles } from "@/components/LobbyTiles";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Heart, Shuffle, Music2, Star } from "lucide-react";
@@ -137,11 +138,12 @@ export default function DateNight() {
   // ---------- landing ----------
   if (!session) {
     return (
-      <main className="relative min-h-[80vh] px-6 py-12 text-center">
+      <main className="relative min-h-[80vh] px-5 py-8 text-center">
         <Scenery className="absolute inset-0 -z-10 h-full w-full opacity-80" />
         <Link href="/" className="text-sm underline">← home</Link>
-        <h1 className="mt-6 font-serif text-4xl">Our time together</h1>
-        <p className="mt-2 font-hand text-2xl">Nothing to plan. Just press the button.</p>
+        <h1 className="mt-4 font-serif text-4xl">Our time together</h1>
+        <p className="mt-1 font-hand text-2xl">Nothing to plan. Just press the button.</p>
+        <LobbyTiles className="mx-auto mt-5 max-w-5xl" />
 
         {invited && (
           <div className="mx-auto mt-6 max-w-sm rounded-3xl bg-blush p-4">
@@ -150,7 +152,7 @@ export default function DateNight() {
           </div>
         )}
 
-        <div className="mx-auto mt-8 flex max-w-md flex-wrap justify-center gap-2">
+        <div className="mx-auto mt-6 flex max-w-md flex-wrap justify-center gap-2">
           {THEMES.map(t => (
             <button key={t} onClick={() => setTheme(theme === t ? null : t)}
               className={`rounded-full px-4 py-1 text-sm ${theme === t ? "bg-rose text-white" : "bg-white/70"}`}>{t}</button>

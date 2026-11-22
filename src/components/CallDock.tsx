@@ -57,7 +57,7 @@ const fmt = (ms: number) => { const s = Math.floor(ms / 1000); return `${Math.fl
 type ViewSize = "s" | "m" | "l";
 type ViewLayout = "sides" | "right";
 interface View { size: ViewSize; layout: ViewLayout }
-const DEFAULT_VIEW: View = { size: "m", layout: "sides" };
+const DEFAULT_VIEW: View = { size: "l", layout: "sides" };
 const loadView = (): View => { try { return { ...DEFAULT_VIEW, ...JSON.parse(localStorage.getItem("callView") || "{}") }; } catch { return DEFAULT_VIEW; } };
 const COL: Record<ViewSize, string> = { s: "clamp(13rem, 17vw, 21rem)", m: "clamp(15rem, 22vw, 28rem)", l: "clamp(17rem, 28vw, 36rem)" };
 const COL_SHARING = "clamp(12rem, 19vw, 24rem)";
@@ -116,7 +116,7 @@ function ScreenPanel({ stream, mine, who, tall, onStop, onShowPage, meNode, part
   const pill = "rounded-full px-4 py-1 text-base shadow-soft";
   return (
     <section className="mx-2 mt-1">
-      <div ref={box} className={`relative flex flex-col overflow-hidden bg-[#3A2620] ${fs ? "h-screen w-screen" : "mx-auto rounded-[2rem] shadow-soft"}`}
+      <div ref={box} className={`relative flex flex-col overflow-hidden bg-[#1B1722] ${fs ? "h-screen w-screen" : "mx-auto rounded-[2rem] shadow-soft"}`}
         style={fs ? undefined : { aspectRatio: String(ratio), width: tall ? `min(100%, calc((100vh - 7.5rem) * ${ratio}))` : "100%" }}>
         <video ref={bgv} autoPlay playsInline muted aria-hidden className="pointer-events-none absolute inset-0 h-full w-full scale-125 object-cover opacity-60 blur-3xl" />
         <div className="relative flex min-h-0 flex-1">
@@ -251,11 +251,11 @@ export function CallDock({ children }: { children: React.ReactNode }) {
     const cv = document.createElement("canvas"); cv.width = W; cv.height = H;
     const ctx = cv.getContext("2d")!;
     ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = "#FFD9C7"; ctx.fillRect(M, M, LW, LH);
+    ctx.fillStyle = "#FFD6E7"; ctx.fillRect(M, M, LW, LH);
     const cell = (v: HTMLVideoElement | null, x: number, mirror: boolean) => {
       ctx.save();
       ctx.beginPath(); ctx.rect(x, M + pad, cellW, cellH); ctx.clip();
-      ctx.fillStyle = "#FFF6E6"; ctx.fillRect(x, M + pad, cellW, cellH);
+      ctx.fillStyle = "#FFFFFF"; ctx.fillRect(x, M + pad, cellW, cellH);
       if (v && v.videoWidth) {
         const vr = v.videoWidth / v.videoHeight, cr = cellW / cellH;
         let sw = v.videoWidth, sh = v.videoHeight, sx = 0, sy = 0;
@@ -271,7 +271,7 @@ export function CallDock({ children }: { children: React.ReactNode }) {
     cell(remoteVid.current, M + pad * 2 + cellW, false);
     const draw = api.current?.canvas();
     if (draw) ctx.drawImage(draw, M, M, LW, LH);
-    ctx.fillStyle = "#4A2F25"; ctx.textAlign = "center"; ctx.font = "64px 'Kalam', cursive";
+    ctx.fillStyle = "#141218"; ctx.textAlign = "center"; ctx.font = "800 60px 'Bricolage Grotesque', sans-serif";
     ctx.fillText(`${me.name} & ${partner?.name ?? ""} · ${new Date().toLocaleDateString([], { day: "numeric", month: "long", year: "numeric" })}`, W / 2, M + LH + 110);
     cv.toBlob(b => {
       if (!b) { setNote("Couldn't make the picture."); return; }

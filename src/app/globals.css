@@ -3,26 +3,30 @@
 @tailwind utilities;
 
 
-/* Colour themes. Light is the default; dark and Christmas are switched with data attributes on <html>. */
+/* Colour themes. White and black with shades of pink, purple, blue, green, yellow and brown.
+   Dark is the default (see useTheme); Christmas swaps the accents to red and pine. */
 :root {
-  --c-paper: 255 246 230; --c-blush: 255 217 199; --c-rose: 212 83 58; --c-powder: 255 224 184;
-  --c-ocean: 244 182 122; --c-sage: 207 224 176; --c-butter: 255 231 163; --c-ink: 74 47 37;
-  --bg-top: #FFEFD2; --bg-mid: #FFF6E6; --bg-bot: #FFE3D6; --card-dark: 74 56 50;
+  --c-paper: 255 255 255; --c-ink: 20 18 24;
+  --c-blush: 255 214 231; --c-rose: 214 48 126; --c-ocean: 222 205 255; --c-powder: 207 230 255;
+  --c-sage: 205 239 211; --c-butter: 255 240 166; --c-cocoa: 222 196 172;
+  --bg-top: #FFFFFF; --bg-mid: #FBF7FF; --bg-bot: #FFF1F8; --card-dark: 36 31 44;
 }
-:root[data-xmas="on"] { --c-rose: 190 36 48; --c-sage: 190 220 176; --c-butter: 255 226 150; --c-blush: 255 214 214; --bg-top: #FFEAEA; --bg-mid: #FFF7F0; --bg-bot: #E6F2E4; }
+:root[data-xmas="on"] { --c-rose: 200 30 55; --c-sage: 190 232 196; --c-blush: 255 220 224; --bg-mid: #FFF8F8; --bg-bot: #EAF6EC; }
 :root[data-theme="dark"] {
-  --c-paper: 43 31 27; --c-blush: 92 58 50; --c-rose: 222 92 68; --c-powder: 84 62 46;
-  --c-ocean: 150 100 60; --c-sage: 66 84 62; --c-butter: 104 84 40; --c-ink: 250 235 215;
-  --bg-top: #1E1512; --bg-mid: #2B1F1B; --bg-bot: #34211D; color-scheme: dark;
+  --c-paper: 18 16 22; --c-ink: 246 242 250;
+  --c-blush: 92 36 66; --c-rose: 226 66 144; --c-ocean: 66 48 112; --c-powder: 28 52 88;
+  --c-sage: 28 74 52; --c-butter: 96 80 20; --c-cocoa: 74 52 40;
+  --bg-top: #0B0A0E; --bg-mid: #131017; --bg-bot: #1B1020; color-scheme: dark;
 }
-:root[data-theme="dark"][data-xmas="on"] { --c-rose: 214 62 70; --c-sage: 40 84 58; --c-butter: 120 98 40; --c-blush: 92 44 48; --bg-top: #1B1416; --bg-mid: #231A1C; --bg-bot: #12241A; }
+:root[data-theme="dark"][data-xmas="on"] { --c-rose: 214 40 60; --c-sage: 24 84 52; --c-blush: 92 30 44; --bg-top: #0D0A0B; --bg-mid: #140E10; --bg-bot: #0C1A12; }
 
 :root {
-  --font-serif: "Baloo 2";
-  --font-sans: "Fredoka";
-  --font-hand: "Gaegu";
-  --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z' fill='%23F2826B' stroke='%23fff' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E") 14 14, auto;
-  --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='34' viewBox='0 0 24 24'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z' fill='%23E0644A' stroke='%23fff' stroke-width='1.6' stroke-linejoin='round'/%3E%3Ccircle cx='19' cy='5' r='1.6' fill='%23fff'/%3E%3Ccircle cx='5' cy='6' r='1.1' fill='%23fff'/%3E%3C/svg%3E") 17 17, pointer;
+  --font-serif: "Gabarito";
+  --font-sans: "Onest";
+  --font-hand: "Mali";
+  --font-mono: "Space Mono";
+  --cursor-default: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z' fill='%23E2428F' stroke='%23fff' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E") 14 14, auto;
+  --cursor-pointer: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='34' viewBox='0 0 24 24'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z' fill='%23D6307E' stroke='%23fff' stroke-width='1.6' stroke-linejoin='round'/%3E%3Ccircle cx='19' cy='5' r='1.6' fill='%23fff'/%3E%3Ccircle cx='5' cy='6' r='1.1' fill='%23fff'/%3E%3C/svg%3E") 17 17, pointer;
 }
 /* 18px root: every rem-based size (text, spacing) scales up for comfortable reading. */
 html { font-size: 18px; background: rgb(var(--c-paper)); }
@@ -33,13 +37,17 @@ body {
   min-height: 100vh;
   background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-mid) 40%, var(--bg-bot) 100%) fixed;
 }
-h1, h2, h3 { font-family: var(--font-serif), system-ui, sans-serif; font-weight: 800; line-height: 1.2; }
-button { font-weight: 500; }
-.font-hand { font-weight: 700; }
+h1, h2, h3 { font-family: var(--font-serif), system-ui, sans-serif; font-weight: 800; line-height: 1.1; letter-spacing: -0.01em; }
+button { font-weight: 600; }
+body { font-weight: 500; }
+/* Names and notes use the display face at a slightly smaller optical size. */
+.font-hand { font-weight: 600; letter-spacing: 0; }
+/* Small labels, clocks and counters use a mono face for a crisp, technical accent. */
+.tracking-widest, .font-mono { font-family: var(--font-mono), ui-monospace, monospace; font-weight: 400; }
 /* Game-like chunky buttons: a little ledge underneath that squishes when pressed. */
-button[class*="bg-"]:not(:disabled) { box-shadow: 0 3px 0 rgba(74,47,37,.16); transition: transform .08s, box-shadow .08s; }
+button[class*="bg-"]:not(:disabled) { box-shadow: 0 3px 0 rgba(0,0,0,.25); transition: transform .08s, box-shadow .08s; }
 button[class*="bg-"]:not(:disabled):hover { transform: translateY(-1px); }
-button[class*="bg-"]:not(:disabled):active { transform: translateY(3px); box-shadow: 0 0 0 rgba(74,47,37,.16); }
+button[class*="bg-"]:not(:disabled):active { transform: translateY(3px); box-shadow: 0 0 0 rgba(0,0,0,.25); }
 .font-hand { line-height: 1.3; }
 
 /* Our own little cursors: a soft heart everywhere, a livelier heart over anything clickable. */
@@ -48,8 +56,8 @@ a, button, select, summary, [role="button"], input[type="range"], input[type="fi
 input:not([type]), input[type="text"], input[type="email"], input[type="password"], textarea { cursor: text; }
 button:disabled { cursor: not-allowed; }
 
-input[type="range"] { accent-color: #E0644A; }
-:focus-visible { outline: 3px solid #E0644A; outline-offset: 2px; }
+input[type="range"] { accent-color: #D6307E; }
+:focus-visible { outline: 3px solid #D6307E; outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 
 @keyframes eq { from { height: 12%; } to { height: 100%; } }

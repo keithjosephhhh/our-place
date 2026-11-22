@@ -1,4 +1,5 @@
 "use client";
+import { GameArt } from "./GameArt";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { GameDef, Seat } from "@/lib/games/types";
 import { useSpace } from "./SpaceProvider";
@@ -65,7 +66,7 @@ export function GameRoom({ game, onLeave }: { game: GameDef<any, any>; onLeave: 
     <div className="mx-auto flex w-full max-w-5xl flex-wrap gap-5">
       <section className="min-w-0 flex-[3_1_24rem] rounded-[2rem] bg-white/75 p-5 shadow-soft backdrop-blur sm:p-8">
         <header className="mb-5 flex items-center justify-between gap-3">
-          <h2 className="font-serif text-3xl text-ink">{game.title} <span className="text-2xl">{game.emoji}</span></h2>
+          <h2 className="font-serif text-3xl text-ink"><GameArt id={game.id} className="mr-2 inline h-9 w-9 align-middle" />{game.title}</h2>
           <button onClick={onLeave} className="rounded-full bg-blush px-5 py-1.5 text-base">Leave game</button>
         </header>
         <p className="mb-5 rounded-2xl bg-powder/70 px-4 py-2 text-center font-hand text-3xl">{status}</p>

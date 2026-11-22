@@ -5,18 +5,18 @@ export interface Theme { dark: boolean; xmas: boolean }
 const KEY = "ourTheme";
 
 function read(): Theme {
-  try { return { dark: false, xmas: false, ...JSON.parse(localStorage.getItem(KEY) || "{}") }; } catch { return { dark: false, xmas: false }; }
+  try { return { dark: true, xmas: true, ...JSON.parse(localStorage.getItem(KEY) || "{}") }; } catch { return { dark: true, xmas: true }; }
 }
 function apply(t: Theme) {
   document.documentElement.dataset.theme = t.dark ? "dark" : "light";
   document.documentElement.dataset.xmas = t.xmas ? "on" : "off";
 }
 /** Runs before first paint (inline in the root layout) so there's no flash of the wrong theme. */
-export const THEME_BOOT = `try{var t=JSON.parse(localStorage.getItem("${KEY}")||"{}");document.documentElement.dataset.theme=t.dark?"dark":"light";document.documentElement.dataset.xmas=t.xmas?"on":"off"}catch(e){}`;
+export const THEME_BOOT = `try{var t=JSON.parse(localStorage.getItem("${KEY}")||"{}");document.documentElement.dataset.theme=t.dark===false?"light":"dark";document.documentElement.dataset.xmas=t.xmas===false?"off":"on"}catch(e){}`;
 
 /** Dark mode and Christmas mode, remembered on this device. */
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>({ dark: false, xmas: false });
+  const [theme, setTheme] = useState<Theme>({ dark: true, xmas: true });
   useEffect(() => {
     setTheme(read());
     const h = () => setTheme(read());

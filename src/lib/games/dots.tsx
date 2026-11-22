@@ -39,7 +39,7 @@ export const dotsAndBoxes: GameDef<S, Move> = {
   },
   Board({ state, send }) {
     const G = 55, O = 20;
-    const colour = (o: Seat | null) => (o === 0 ? "#E0644A" : "#F4B67A");
+    const colour = (o: Seat | null) => (o === 0 ? "#D6307E" : "#DCCBFF");
     return (
       <svg viewBox="0 0 260 260" className="mx-auto w-full rounded-3xl bg-white/70 shadow-soft" style={{ maxWidth: "min(540px, calc(100vh - 20rem))" }}>
         {state.boxes.map((row, r) => row.map((o, c) => o !== null && (
@@ -47,18 +47,18 @@ export const dotsAndBoxes: GameDef<S, Move> = {
         )))}
         {state.h.map((row, r) => row.map((on, c) => (
           <g key={`h${r}${c}`} onClick={() => send({ t: "h", r, c })} style={{ cursor: "var(--cursor-pointer)" }}>
-            <line x1={O + c * G} y1={O + r * G} x2={O + (c + 1) * G} y2={O + r * G} stroke={on ? "#6B4A3C" : "#F4B67A"} strokeOpacity={on ? 1 : 0.35} strokeWidth={on ? 4 : 3} strokeLinecap="round" />
+            <line x1={O + c * G} y1={O + r * G} x2={O + (c + 1) * G} y2={O + r * G} stroke={on ? "#4A4455" : "#DCCBFF"} strokeOpacity={on ? 1 : 0.35} strokeWidth={on ? 4 : 3} strokeLinecap="round" />
             <line x1={O + c * G} y1={O + r * G} x2={O + (c + 1) * G} y2={O + r * G} stroke="transparent" strokeWidth={20} />
           </g>
         )))}
         {state.v.map((row, r) => row.map((on, c) => (
           <g key={`v${r}${c}`} onClick={() => send({ t: "v", r, c })} style={{ cursor: "var(--cursor-pointer)" }}>
-            <line x1={O + c * G} y1={O + r * G} x2={O + c * G} y2={O + (r + 1) * G} stroke={on ? "#6B4A3C" : "#F4B67A"} strokeOpacity={on ? 1 : 0.35} strokeWidth={on ? 4 : 3} strokeLinecap="round" />
+            <line x1={O + c * G} y1={O + r * G} x2={O + c * G} y2={O + (r + 1) * G} stroke={on ? "#4A4455" : "#DCCBFF"} strokeOpacity={on ? 1 : 0.35} strokeWidth={on ? 4 : 3} strokeLinecap="round" />
             <line x1={O + c * G} y1={O + r * G} x2={O + c * G} y2={O + (r + 1) * G} stroke="transparent" strokeWidth={20} />
           </g>
         )))}
         {Array.from({ length: B + 1 }).map((_, r) => Array.from({ length: B + 1 }).map((_, c) => (
-          <circle key={`d${r}${c}`} cx={O + c * G} cy={O + r * G} r={4.5} fill="#6B4A3C" />
+          <circle key={`d${r}${c}`} cx={O + c * G} cy={O + r * G} r={4.5} fill="#4A4455" />
         )))}
       </svg>
     );

@@ -12,13 +12,15 @@ const config: Config = {
         powder: "rgb(var(--c-powder) / <alpha-value>)",
         ocean: "rgb(var(--c-ocean) / <alpha-value>)",
         sage: "rgb(var(--c-sage) / <alpha-value>)",
+        cocoa: "rgb(var(--c-cocoa) / <alpha-value>)",
         butter: "rgb(var(--c-butter) / <alpha-value>)",
         ink: "rgb(var(--c-ink) / <alpha-value>)",
       },
       fontFamily: {
         serif: ["var(--font-serif)", "Georgia", "serif"],
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
-        hand: ["var(--font-hand)", "cursive"],
+        hand: ["var(--font-hand)", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       boxShadow: {
         soft: "0 10px 30px -12px rgba(101,91,87,0.25)",

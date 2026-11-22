@@ -50,3 +50,12 @@ First person: create the space with the bootstrap SQL, then both of you sign up 
 
 ## Dark mode and Christmas mode
 Two small buttons in the top bar: 🌙/☀️ for dark mode and 🎄 for Christmas mode (twinkling lights, snow, decorations, a festive palette and a Merry Christmas greeting). They combine, and each device remembers its own choice.
+
+## Photo Booth
+Open the Photo Booth from the dock. Pick "Just me" or, during a video call, "Both of us" (you and your person side by side in every shot). It takes a single photo or a 4-photo strip with a 3-2-1 countdown, and your person sees the countdown too. Choose a look, frame colour, stickers and caption, then download the picture or save it to the shared album (stored privately in Supabase Storage under `photos/`).
+
+## Look and layout (latest)
+- Colours: white and black, with pink, purple, blue, green, yellow and brown. Dark mode and Christmas mode are on by default; both can be toggled in the top bar.
+- Layout: top tabs on computers, bottom tab bar on phones; the home page and Date Night open with both of you as big camera rectangles.
+- Games use original illustrated artwork (`src/components/GameArt.tsx`, one drawing per game id).
+- Photo Booth face filters (`src/lib/faceFilters.ts`): mustache, puppy, kitty, bunny, Santa hat, reindeer, crown, shades, flower crown. They use MediaPipe face landmarks, loaded from a CDN the first time (needs internet).

@@ -2,7 +2,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Heart } from "lucide-react";
+import { Heart, Moon } from "lucide-react";
+import { LobbyTiles } from "@/components/LobbyTiles";
 import { useSpace } from "@/components/SpaceProvider";
 import { Scenery } from "@/components/Scenery";
 import { PLAYABLE } from "@/lib/games/registry";
@@ -44,26 +45,29 @@ export default function Home() {
 
   return (
     <main>
-      <section className="relative overflow-hidden px-6 pb-14 pt-6 text-center">
+      <section className="relative overflow-hidden px-5 pb-6 pt-5">
         <Scenery className="absolute inset-0 -z-10 h-full w-full" />
-        <p className="font-hand text-3xl">{th.xmas ? "Merry Christmas" : hello}, {me.name} {th.xmas ? "🎄" : "☀️"}</p>
-        <h1 className="mt-1 text-5xl text-ink sm:text-6xl">A little place for us</h1>
-        <div className="mt-3 flex items-center justify-center gap-4 font-hand text-4xl">
-          <span>{me.name}</span><Heart className="animate-beat fill-rose text-rose" size={30} /><span>{partner?.name ?? "…"}</span>
+        <div className="mx-auto max-w-4xl text-center">
+          <p className="font-hand text-2xl">{th.xmas ? "Merry Christmas" : hello}, {me.name} {th.xmas ? "🎄" : "☀️"}</p>
+          <h1 className="mt-1 text-4xl text-ink sm:text-5xl">A little place for us</h1>
+          <p className="mt-1 text-base">{peer ? <span className="text-green-700">● {partner?.name} is online right now</span> : `${partner?.name ?? "She"} isn't online yet. Send a wave and she'll see it when she's back.`}</p>
         </div>
-        <p className="mt-1 text-base">{peer ? <span className="text-green-800">● {partner?.name} is online right now</span> : `${partner?.name ?? "She"} isn't online yet. Send a wave and she'll see it when she's back.`}</p>
-        <p className="mt-2 font-hand text-2xl">{DAILY[day % DAILY.length]}</p>
-        <Link href="/date-night" className="mt-5 inline-block rounded-full border-b-4 border-ink/20 bg-rose px-9 py-3 text-xl text-white shadow-soft transition hover:scale-105">
-          🌙 Start a date night
-        </Link>
+        <LobbyTiles className="mx-auto mt-4 max-w-4xl" />
+        <div className="mt-4 text-center">
+          <p className="font-hand text-xl">{DAILY[day % DAILY.length]}</p>
+          <Link href="/date-night" className="mt-3 inline-flex items-center gap-2 rounded-full border-b-4 border-ink/20 bg-rose px-8 py-3 text-xl text-white shadow-soft transition hover:scale-105">
+            <Moon size={20} /> Start a date night
+          </Link>
+        </div>
       </section>
 
       <h2 className="mx-auto max-w-5xl px-6 pb-2 text-2xl">Our apps</h2>
-      <nav className="mx-auto grid max-w-5xl grid-cols-3 gap-3 px-5 @xl:grid-cols-4 @3xl:grid-cols-4">
+      <nav className="mx-auto grid max-w-5xl grid-cols-2 gap-3 px-5 sm:grid-cols-3 @3xl:grid-cols-4">
         {APPS.slice(1).map((t, i) => {
+          const Icon = t.icon;
           const body = (
             <>
-              <span className="text-5xl leading-none">{t.emoji}</span>
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/70 text-ink"><Icon size={26} /></span>
               <span className="mt-3 block font-serif text-xl">{t.label}</span>
               <span className="mt-0.5 block text-sm leading-snug">{t.ready ? (t.href === "/arcade" ? `${PLAYABLE.length} games ready` : t.blurb) : "coming soon"}</span>
             </>
@@ -71,9 +75,9 @@ export default function Home() {
           return (
             <motion.div key={t.href} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05, duration: 0.5 }}>
               {t.ready ? (
-                <Link href={t.href} className={`block min-h-[9.5rem] rounded-[1.75rem] border-b-4 border-ink/15 ${t.bg} p-4 shadow-soft transition hover:-translate-y-1.5 hover:rotate-[-1.5deg] active:translate-y-0.5 active:border-b-2`}>{body}</Link>
+                <Link href={t.href} className={`block min-h-[9rem] rounded-[1.75rem] border-b-4 border-ink/15 ${t.bg} p-4 shadow-soft transition hover:-translate-y-1.5 active:translate-y-0.5 active:border-b-2`}>{body}</Link>
               ) : (
-                <div className={`min-h-[9.5rem] rounded-[1.75rem] border-2 border-dashed border-ink/20 bg-white/50 p-4 opacity-70`}>{body}</div>
+                <div className="min-h-[9rem] rounded-[1.75rem] border-2 border-dashed border-ink/20 bg-white/50 p-4 opacity-70">{body}</div>
               )}
             </motion.div>
           );

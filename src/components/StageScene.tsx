@@ -8,11 +8,11 @@ export function StageScene({ scene }: { scene: SceneKind }) {
     <div className="absolute inset-0 overflow-hidden" aria-hidden>
       {scene === "sunset" && (
         <>
-          <div className="absolute inset-0" style={{ background: "linear-gradient(180deg,#FFE7A3 0%,#FFD9C7 48%,#F7CDBB 72%,#F3E6D3 100%)" }} />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(180deg,#FFF0A6 0%,#FFD6E7 48%,#F7CDBB 72%,#F3E6D3 100%)" }} />
           <div className="absolute bottom-[30%] left-1/2 h-40 w-40 -translate-x-1/2 rounded-full bg-[#F8C9B8]" />
           <svg viewBox="0 0 800 200" preserveAspectRatio="none" className="absolute inset-x-0 bottom-0 h-[34%] w-full">
-            <path d="M0 40 Q100 15 200 40 T400 40 T600 40 T800 40 L800 200 L0 200Z" fill="#F4B67A" opacity="0.8" />
-            <path d="M0 80 Q100 55 200 80 T400 80 T600 80 T800 80 L800 200 L0 200Z" fill="#FFE7A3" />
+            <path d="M0 40 Q100 15 200 40 T400 40 T600 40 T800 40 L800 200 L0 200Z" fill="#DCCBFF" opacity="0.8" />
+            <path d="M0 80 Q100 55 200 80 T400 80 T600 80 T800 80 L800 200 L0 200Z" fill="#FFF0A6" />
             <path d="M0 140 Q200 120 400 140 T800 140 L800 200 L0 200Z" fill="#F3E6D3" />
           </svg>
         </>
@@ -45,7 +45,7 @@ export function StageScene({ scene }: { scene: SceneKind }) {
       )}
       {scene === "clouds" && (
         <>
-          <div className="absolute inset-0" style={{ background: "linear-gradient(180deg,#CFE3EF 0%,#E8F0F4 55%,#FFF6E6 100%)" }} />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(180deg,#CFE3EF 0%,#E8F0F4 55%,#FFFFFF 100%)" }} />
           {[{ t: "12%", l: "8%", d: "38s", w: 220 }, { t: "30%", l: "58%", d: "52s", w: 280 }, { t: "58%", l: "22%", d: "44s", w: 200 }].map((c, i) => (
             <svg key={i} viewBox="0 0 200 70" className="absolute animate-drift" style={{ top: c.t, left: c.l, width: c.w, animationDuration: c.d }}>
               <g fill="#fff" opacity="0.92"><ellipse cx="60" cy="45" rx="55" ry="20" /><ellipse cx="105" cy="32" rx="42" ry="24" /><ellipse cx="145" cy="46" rx="42" ry="18" /></g>
@@ -55,7 +55,7 @@ export function StageScene({ scene }: { scene: SceneKind }) {
       )}
       {scene === "picnic" && (
         <div className="absolute inset-0" style={{
-          backgroundColor: "#FFF6E6",
+          backgroundColor: "#FFFFFF",
           backgroundImage: "repeating-linear-gradient(0deg, rgba(217,174,187,.45) 0 34px, transparent 34px 68px), repeating-linear-gradient(90deg, rgba(217,174,187,.45) 0 34px, transparent 34px 68px)",
         }} />
       )}

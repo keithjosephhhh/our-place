@@ -4,6 +4,7 @@ import { Camera, Download, RefreshCw, Save, Trash2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useSpace } from "@/components/SpaceProvider";
 import { FILTERS, FILTER_CSS, type FilterKind } from "@/lib/stageStyle";
+import { FACE_FILTERS, drawFilter, makeMapper, useFaceTracker, type FaceKind } from "@/lib/faceFilters";
 
 type Layout = "strip" | "single";
 interface Theme { id: string; label: string; bg: string; fg: string }
@@ -13,6 +14,9 @@ const THEMES: Theme[] = [
   { id: "mint", label: "Mint", bg: "#CFE0B0", fg: "#2F4A2A" },
   { id: "cocoa", label: "Cocoa", bg: "#4A2F25", fg: "#FFF6E6" },
   { id: "xmas", label: "Christmas", bg: "#B3202D", fg: "#FFFFFF" },
+  { id: "pink", label: "Pink", bg: "#FFC2DB", fg: "#5A1636" },
+  { id: "lilac", label: "Purple", bg: "#D9C8FF", fg: "#35205F" },
+  { id: "sky", label: "Blue", bg: "#BFDDFF", fg: "#183A66" },
 ];
 const STICKERS: Record<string, string[]> = {
   none: [], hearts: ["💗", "💕", "💖", "✨"], stars: ["⭐", "🌟", "✨", "🌙"], xmas: ["🎄", "❄️", "🎁", "⭐", "🎅"], flowers: ["🌸", "🌼", "🌷", "🦋"],
@@ -22,7 +26,7 @@ const STICKER_LABEL: Record<string, string> = { none: "None", hearts: "💗 Hear
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
 /** Draw a video into a rectangle like CSS object-fit: cover, optionally mirrored and filtered. */
-function drawCover(ctx: CanvasRenderingContext2D, v: HTMLVideoElement, x: number, y: number, w: number, h: number, mirror: boolean, filter: string) {
+function drawCover(ctx: CanvasRenderingContext2D, v: HTMLVideoElement, x: number, y: number, w: number, h: number, mirror: boolean, filter: string, face?: { kind: FaceKind; lm: { x: number; y: number }[] | null }) {
   if (!v.videoWidth) { ctx.fillStyle = "#EEE"; ctx.fillRect(x, y, w, h); return; }
   const vr = v.videoWidth / v.videoHeight, cr = w / h;
   let sw = v.videoWidth, sh = v.videoHeight, sx = 0, sy = 0;
@@ -33,6 +37,11 @@ function drawCover(ctx: CanvasRenderingContext2D, v: HTMLVideoElement, x: number
   if (mirror) { ctx.translate(x + w, y); ctx.scale(-1, 1); ctx.drawImage(v, sx, sy, sw, sh, 0, 0, w, h); }
   else ctx.drawImage(v, sx, sy, sw, sh, x, y, w, h);
   ctx.restore();
+  if (face && face.kind !== "none" && face.lm) {
+    ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+    drawFilter(ctx, face.kind, face.lm.map(makeMapper(v.videoWidth, v.videoHeight, x, y, w, h, mirror)));
+    ctx.restore();
+  }
 }
 
 export default function PhotoBooth() {
@@ -50,6 +59,10 @@ export default function PhotoBooth() {
   const [layout, setLayout] = useState<Layout>("strip");
   const [theme, setTheme] = useState("peach");
   const [stickers, setStickers] = useState("hearts");
+  const [face, setFace] = useState<FaceKind>("mustache");
+  const { lms, status: faceStatus } = useFaceTracker(face !== "none", [myVid, theirVid]);
+  const myOverlay = useRef<HTMLCanvasElement>(null);
+  const theirOverlay = useRef<HTMLCanvasElement>(null);
   const [together, setTogether] = useState(false);
   const [caption, setCaption] = useState("");
   const [count, setCount] = useState<number | null>(null);
@@ -96,16 +109,36 @@ export default function PhotoBooth() {
   }, [preview, spaceId]);
   useEffect(() => { loadAlbum(); }, [loadAlbum]);
 
+  // live preview of the face filter, drawn over each video with the same crop and mirroring as the saved picture
+  useEffect(() => {
+    let raf = 0;
+    const paint = (cv: HTMLCanvasElement | null, v: HTMLVideoElement | null, lm: { x: number; y: number }[] | null, mirror: boolean) => {
+      if (!cv || !v) return;
+      const dpr = window.devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
+      if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); }
+      const ctx = cv.getContext("2d")!; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h);
+      if (face === "none" || !lm || !v.videoWidth) return;
+      drawFilter(ctx, face, lm.map(makeMapper(v.videoWidth, v.videoHeight, 0, 0, w, h, mirror)));
+    };
+    const loop = () => {
+      paint(myOverlay.current, myVid.current, lms.current[0], true);
+      paint(theirOverlay.current, theirVid.current, lms.current[1], false);
+      raf = requestAnimationFrame(loop);
+    };
+    loop();
+    return () => cancelAnimationFrame(raf);
+  }, [face, lms]);
+
   // ---------- taking pictures ----------
   const cellSize = both ? { w: 900, h: 600 } : { w: 800, h: 600 };
   const snap = () => {
     const c = document.createElement("canvas"); c.width = cellSize.w; c.height = cellSize.h;
     const ctx = c.getContext("2d")!; const f = FILTER_CSS[filter];
     if (both && myVid.current && theirVid.current) {
-      drawCover(ctx, myVid.current, 0, 0, cellSize.w / 2, cellSize.h, true, f);
-      drawCover(ctx, theirVid.current, cellSize.w / 2, 0, cellSize.w / 2, cellSize.h, false, f);
+      drawCover(ctx, myVid.current, 0, 0, cellSize.w / 2, cellSize.h, true, f, { kind: face, lm: lms.current[0] });
+      drawCover(ctx, theirVid.current, cellSize.w / 2, 0, cellSize.w / 2, cellSize.h, false, f, { kind: face, lm: lms.current[1] });
       ctx.fillStyle = "rgba(255,255,255,.9)"; ctx.fillRect(cellSize.w / 2 - 2, 0, 4, cellSize.h);
-    } else if (myVid.current) drawCover(ctx, myVid.current, 0, 0, cellSize.w, cellSize.h, true, f);
+    } else if (myVid.current) drawCover(ctx, myVid.current, 0, 0, cellSize.w, cellSize.h, true, f, { kind: face, lm: lms.current[0] });
     return c;
   };
 
@@ -124,9 +157,9 @@ export default function PhotoBooth() {
     });
     const date = new Date().toLocaleDateString([], { day: "numeric", month: "long", year: "numeric" });
     ctx.fillStyle = th.fg; ctx.textAlign = "center";
-    ctx.font = "700 54px 'Gaegu', cursive";
+    ctx.font = "800 52px 'Mali', sans-serif";
     ctx.fillText(caption.trim() || `${me.name} & ${partner?.name ?? ""}`, W / 2, H - foot / 2 - 10);
-    ctx.font = "400 30px 'Fredoka', sans-serif"; ctx.globalAlpha = 0.8;
+    ctx.font = "500 26px 'Space Mono', monospace"; ctx.globalAlpha = 0.8;
     ctx.fillText(date, W / 2, H - foot / 2 + 40); ctx.globalAlpha = 1;
     const em = STICKERS[stickers];
     if (em.length) {
@@ -151,6 +184,7 @@ export default function PhotoBooth() {
       setTimeout(() => setFlash(false), 180);
       if (i < total - 1) await sleep(900);
     }
+    try { await Promise.all([document.fonts.load("800 52px 'Mali'"), document.fonts.load("500 26px 'Space Mono'")]); } catch { /* fall back to system fonts */ }
     await compose(got);
     setBusy(false);
   };
@@ -210,8 +244,16 @@ export default function PhotoBooth() {
                 </div>
                 <div className={`relative overflow-hidden rounded-3xl border-[10px] border-[#D9D3C9] bg-black shadow-[inset_0_0_30px_rgba(0,0,0,.7)] ${both ? "aspect-[3/2]" : "aspect-[4/3]"} max-h-[52vh] mx-auto`}>
                   <div className="absolute inset-0 flex">
-                    <video ref={myVid} autoPlay playsInline muted className={`h-full ${both ? "w-1/2" : "w-full"} -scale-x-100 object-cover`} style={{ filter: FILTER_CSS[filter] || undefined }} />
-                    {both && <video ref={theirVid} autoPlay playsInline muted className="h-full w-1/2 border-l-4 border-white/90 object-cover" style={{ filter: FILTER_CSS[filter] || undefined }} />}
+                    <div className={`relative h-full ${both ? "w-1/2" : "w-full"}`}>
+                      <video ref={myVid} autoPlay playsInline muted className="h-full w-full -scale-x-100 object-cover" style={{ filter: FILTER_CSS[filter] || undefined }} />
+                      <canvas ref={myOverlay} className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden />
+                    </div>
+                    {both && (
+                      <div className="relative h-full w-1/2 border-l-4 border-white/90">
+                        <video ref={theirVid} autoPlay playsInline muted className="h-full w-full object-cover" style={{ filter: FILTER_CSS[filter] || undefined }} />
+                        <canvas ref={theirOverlay} className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden />
+                      </div>
+                    )}
                   </div>
                   <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/15 via-transparent to-transparent" aria-hidden />
                   {!stream && <div className="absolute inset-0 grid place-items-center bg-blush p-6 text-center font-hand text-2xl text-ink">{camErr ?? "Opening the camera…"}</div>}
@@ -257,6 +299,12 @@ export default function PhotoBooth() {
               <div>
                 <p className="mb-1 text-sm">Look</p>
                 <div className="flex flex-wrap gap-2">{FILTERS.map(f => <button key={f.id} className={chip(filter === f.id)} onClick={() => setFilter(f.id)}>{f.label}</button>)}</div>
+              </div>
+              <div>
+                <p className="mb-1 text-sm">Face filter</p>
+                <div className="flex flex-wrap gap-2">{FACE_FILTERS.map(f => <button key={f.id} className={chip(face === f.id)} onClick={() => setFace(f.id)}><span aria-hidden>{f.icon}</span> {f.label}</button>)}</div>
+                {face !== "none" && faceStatus === "loading" && <p className="mt-1 font-hand text-base">Finding your face…</p>}
+                {face !== "none" && faceStatus === "error" && <p className="mt-1 text-sm text-red-700">Face filters couldn&apos;t load (they need an internet connection). Photos still work without them.</p>}
               </div>
               <div>
                 <p className="mb-1 text-sm">Frame colour</p>
